@@ -9,12 +9,18 @@ struct TensorShape {
   TensorShape() {};
   TensorShape(vector<int> shape) : shape(shape) {};
   vector<int> shape;
-  int GetSize() {
-    int size = 0;
+
+  int Rank() const {
+    return shape.size();
+  }
+
+  int NumElements() {
+    int size = 1;
     for (auto dim : shape)
-      size += dim;
+      size *= dim;
     return size;
   }
+
   static TensorShape Slice(const TensorShape& a, int start, int end) {
     vector<int> slice_v;
     for (int i = start; i < end; i++) {
@@ -36,50 +42,101 @@ struct TensorShape {
 struct TensorIndex {
   TensorIndex(vector<int> indices) : indices(indices) {};
   vector<int> indices;
+  inline int Dim(int dim) {
+    return indices[dim];
+  }
 };
 
 template<typename T>
 struct Tensor {
   Tensor() {};
   Tensor(TensorShape shape) : shape(shape) {
-    data.resize(this->shape.GetSize());
+    data.resize(this->shape.NumElements());
+    strides = ShapeToStrides(shape);
   };
   Tensor(vector<int> shape) : shape(shape) {
-    data.resize(this->shape.GetSize());
+    data.resize(this->shape.NumElements());
+    strides = ShapeToStrides(shape);
   }
   vector<T> data;
   TensorShape shape;
+  vector<int> strides;
 
   void print() {
+    cout << "\nNumElements: ";
+    cout << shape.NumElements();
+    cout << "\nShape: ";
+    for (auto s : shape.shape)
+      cout << s << ' ';
+    cout << "\nStrides: ";
+    for (auto s : strides)
+      cout << s << ' ';
+    cout << "\nData: ";
     for (auto d : data)
       cout << d << ' ';
     cout << endl;
   }
 
+  inline T & at(TensorIndex index) {
+    int flat_index = 0;
+    for (int i = 0; i < shape.Rank(); i++)
+      flat_index += strides[i] * index.Dim(i);
+    return data[flat_index];
+  }
+
+  static vector<int> ShapeToStrides(TensorShape shape) {
+    vector<int> strides(shape.Rank());
+    strides[shape.Rank() - 1] = 1;
+    for (int i = shape.Rank() - 2; i >= 0; i--) {
+      strides[i] = shape.shape[i + 1] * strides[i + 1];
+    }
+    return strides;
+  }
+
   static Tensor<T> Add(const Tensor<T> & a, const Tensor<T> & b) {
     Tensor<T> out(a.shape);
-    for (int i = 0; i < out.shape.GetSize(); i++)
+    for (int i = 0; i < out.shape.NumElements(); i++)
       out.data[i] = a.data[i] + b.data[i];
     return out;
   }
 
   static Tensor<T> Mult(const Tensor<T> & a, const Tensor<T> & b) {
     Tensor<T> out(a.shape);
-    for (int i = 0; i < out.shape.GetSize(); i++)
+    for (int i = 0; i < out.shape.NumElements(); i++)
       out.data[i] = a.data[i] * b.data[i];
+    return out;
+  }
+
+  static Tensor<T> MatMult(Tensor<T> & a, Tensor<T> & b) {
+    if (a.shape.shape[1] != b.shape.shape[0])
+      throw runtime_error("Invalid dimensions");
+    TensorShape tshape({a.shape.shape[0], b.shape.shape[1]});
+    Tensor<T> out(tshape);
+    int ni = out.shape.shape[0];
+    int nj = out.shape.shape[1];
+    int nk = out.shape.shape[2];
+    for (int i = 0; i < ni; i++) {
+      for (int j = 0; j < nj; j++) {
+        int sum = 0;
+        for (int k = 0; k < nk; k++) {
+          sum += a.at(TensorIndex({i, k})) * b.at(TensorIndex({k, j}));
+        }
+        out.at(TensorIndex({i, j})) = sum;
+      }
+    }
     return out;
   }
 
   static Tensor<T> Ones(TensorShape shape) {
     Tensor<T> t(shape);
-    for (int i = 0; i < t.shape.GetSize(); i++)
+    for (int i = 0; i < t.shape.NumElements(); i++)
       t.data[i] = 1;
     return t;
   }
 
   static Tensor<T> Zeros(TensorShape shape) {
     Tensor<T> t(shape);
-    for (int i = 0; i < t.shape.GetSize(); i++)
+    for (int i = 0; i < t.shape.NumElements(); i++)
       t.data[i] = 0;
     return t;
   }
@@ -87,7 +144,13 @@ struct Tensor {
 
 template<typename T>
 struct Op {
+  // evaluates the output of the operation by recursively evaluating the output
+  // of dependent operations until a Variable operation is reached.
   virtual Tensor<T> evaluate() = 0;
+
+  // evaluates the partial derivative of the operation wrt. another operation.
+  //
+  // (output shape, input shape)
   virtual Tensor<T> partial(Op<T> * x) = 0;
 };
 
@@ -104,8 +167,8 @@ struct Variable : public Op<T> {
 };
 
 template<typename T>
-struct Dot : public Op<T> {
-  Dot(Op<T>* a, Op<T>* b) : a(a), b(b) {};
+struct MatMult : public Op<T> {
+  MatMult(Op<T>* a, Op<T>* b) : a(a), b(b) {};
   Op<T>* a;
   Op<T>* b;
   Tensor<T> evaluate() override {
@@ -119,7 +182,9 @@ struct Dot : public Op<T> {
         TensorShape::Slice(b_out.shape, 1, (int)b_out.shape.shape.size())
     );
     Tensor<T> out(out_shape);
+
     // perform dot product
+
   }
 };
 
@@ -182,27 +247,13 @@ struct Mult : public Op<T> {
 };
 
 int main() {
-  Variable<float> a({3});
-  Variable<float> b({3});
-  a.tensor.data = {1, 2, 3};
-  b.tensor.data = {4, 5, 6};
-  Add<float> add(&a, &b);
-  Mult<float> mult(&a, &b);
-  auto add_out = add.evaluate();
-  auto mult_out = mult.evaluate();
-
-  add_out.print();
-  mult_out.print();
-
-  auto dadd_da = add.partial(&a);
-  auto dadd_db = add.partial(&b);
-  auto dmult_da = mult.partial(&a);
-  auto dmult_db = mult.partial(&b);
-  dadd_da.print();
-  dadd_db.print();
-  dmult_da.print();
-  dmult_db.print();
-
-
+  Tensor<float> t1({3, 3});
+  Tensor<float> t2({3, 1});
+  t1.data = {1, 2, 3, 1, 2, 3, 1, 2, 3};
+  t2.data = {1, 1, 1};
+  Tensor<float> t3 = Tensor<float>::MatMult(t1, t2);
+  t1.print();
+  t2.print();
+  t3.print();
   return 0;
 }
