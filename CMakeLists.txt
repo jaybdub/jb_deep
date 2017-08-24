@@ -9,9 +9,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 
 # JB_DEEP LIBRARY
 
-add_library(jb_deep src/tensor.cc)
-
 # TESTS
 
 add_executable(test_tensor test/test_tensor.cc)
-target_link_libraries(test_tensor jb_deep)
+target_link_libraries(test_tensor)

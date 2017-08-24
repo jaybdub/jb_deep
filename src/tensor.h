@@ -5,7 +5,7 @@
 #include <functional>
 #include <numeric>
 
-#define TENSOR_TYPE(type, name) typedef type name; template class Tensor<name>;
+#define TENSOR_TYPE(type, name) typedef type name;
 
 using namespace std;
 
@@ -13,30 +13,60 @@ namespace jb {
 
 namespace tensor {
 
+TENSOR_TYPE(float, Float32)
+TENSOR_TYPE(double, Float64)
+TENSOR_TYPE(int32_t, Int32)
+TENSOR_TYPE(int64_t, Int64)
+
 template<typename T>
 class Tensor;
 
 // UTILITY FUNCTIONS
 
-vector<int> ShapeToStrides(const vector<int> & shape);
+vector<int> ShapeToStrides(const vector<int> &shape) {
+  int ndim = (int)shape.size();
+  vector<int> strides(ndim);
+  strides[ndim - 1] = 1;
+  for (int i = ndim - 2; i >= 0; i--) {
+    strides[i] = shape[i + 1] * strides[i + 1];
+  }
+  return strides;
+}
 
 // FRIEND FUNCTIONS
 
 template<typename T>
-Tensor<T> Add(const Tensor<T> & a, const Tensor<T> & b);
+Tensor<T> Add(const Tensor<T> & a, const Tensor<T> & b) {
+  Tensor<T> c(a.shape);
+  for (int i = 0; i < c.Size(); i++)
+    c.data[i] = a.data[i] + b.data[i];
+  return c;
+}
 
 template<typename T>
-Tensor<T> Multiply(const Tensor<T> & a, const Tensor<T> & b);
+Tensor<T> Multiply(const Tensor<T> & a, const Tensor<T> & b) {
+  Tensor<T> c(a.shape);
+  for (int i = 0; i < c.Size(); i++)
+    c.data[i] = a.data[i] * b.data[i];
+  return c;
+}
 
 // TENSOR CLASS
 template<typename T>
 class Tensor {
 public:
-  Tensor(vector<int> shape);
+  Tensor(vector<int> shape) : shape(shape), stride(ShapeToStrides(shape)) {
+    data.resize(Size());
+  };
+
   vector<T> & Data() { return data; };
   vector<int> & Shape() { return shape; };
   vector<int> & Stride() { return stride; };
-  int Size();
+
+  int Size() {
+    return accumulate(shape.begin(), shape.end(), 1, multiplies<int>());
+  };
+
   friend Tensor Multiply<T>(const Tensor & a, const Tensor & b);
   friend Tensor Add<T>(const Tensor & a, const Tensor & b);
 
@@ -45,18 +75,6 @@ private:
   vector<int> shape;
   vector<int> stride;
 };
-
-// DATA TYPES
-TENSOR_TYPE(float, Float32);
-TENSOR_TYPE(double, Float64);
-TENSOR_TYPE(int8_t, Int8);
-TENSOR_TYPE(int16_t, Int16);
-TENSOR_TYPE(int32_t, Int32);
-TENSOR_TYPE(int64_t, Int64);
-TENSOR_TYPE(uint8_t, UInt8);
-TENSOR_TYPE(uint16_t, UInt16);
-TENSOR_TYPE(uint32_t, UInt32);
-TENSOR_TYPE(uint64_t, UInt64);
 
 }  // namespace tensor
 

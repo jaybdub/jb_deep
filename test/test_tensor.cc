@@ -36,8 +36,54 @@ void TestTensorConstructorShapeStride() {
   }
 }
 
+void TestTensorSize() {
+  {
+    Tensor<Float32> tensor({2, 3, 9});
+    AssertTrue(tensor.Size() == 2 * 3 * 9, "Incorrect tensor size");
+  }
+}
+
+void TestTensorAdd() {
+  // correct output
+  {
+    Tensor<Int32> t1({2, 3});
+    Tensor<Int32> t2({2, 3});
+    t1.Data() = {1, 2, 3, 1, 2, 3};
+    t2.Data() = {2, 3, 4, 2, 3, 4};
+    Tensor<Int32> out = Add<Int32>(t1, t2);
+    AssertTrue(out.Data()[0] == 3, "Invalid add result");
+    AssertTrue(out.Data()[1] == 5, "Invalid add result");
+    AssertTrue(out.Data()[2] == 7, "Invalid add result");
+    AssertTrue(out.Data()[3] == 3, "Invalid add result");
+    AssertTrue(out.Data()[4] == 5, "Invalid add result");
+    AssertTrue(out.Data()[5] == 7, "Invalid add result");
+  }
+}
+
+void TestTensorMultiply() {
+  // correct output
+  {
+    Tensor<Int32> t1({2, 3});
+    Tensor<Int32> t2({2, 3});
+    t1.Data() = {1, 2, 3, 1, 2, 3};
+    t2.Data() = {2, 3, 4, 2, 3, 4};
+    Tensor<Int32> out = Multiply<Int32>(t1, t2);
+    AssertTrue(out.Data()[0] == 2, "Invalid add result");
+    AssertTrue(out.Data()[1] == 6, "Invalid add result");
+    AssertTrue(out.Data()[2] == 12, "Invalid add result");
+    AssertTrue(out.Data()[3] == 2, "Invalid add result");
+    AssertTrue(out.Data()[4] == 6, "Invalid add result");
+    AssertTrue(out.Data()[5] == 12, "Invalid add result");
+  }
+}
+
+
+
 int main() {
   TestTensorShapeToStride();
   TestTensorConstructorShapeStride();
+  TestTensorSize();
+  TestTensorAdd();
+  TestTensorMultiply();
   return 0;
 }
