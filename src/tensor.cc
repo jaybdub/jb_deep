@@ -16,7 +16,27 @@ vector<int> ShapeToStrides(const vector<int> &shape) {
   return strides;
 }
 
+// FRIEND FUNCTIONS
+
+template<typename T>
+Tensor<T> Add(const Tensor<T> & a, const Tensor<T> & b) {
+}
+
+template<typename T>
+Tensor<T> Multiply(const Tensor<T> & a, const Tensor<T> & b) {
+}
+
 // TENSOR CLASS
+
+template<typename T>
+Tensor<T>::Tensor(vector<int> shape) : shape(shape), stride(ShapeToStrides(shape)) {
+  data.resize(Size());
+};
+
+template<typename T>
+int Tensor<T>::Size() {
+  return accumulate(shape.begin(), shape.end(), 1, multiplies<int>());
+}
 
 }  // namespace tensor
 
