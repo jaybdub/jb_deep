@@ -1,9 +1,12 @@
 #include <iostream>
-#include <assert.h>
+#include <functional>
+#include <cstdlib>
+
 
 #include "src/tensor.h"
 #include "test/test.h"
 
+using namespace std;
 using namespace jb;
 using namespace jb::tensor;
 using namespace jb::test;
@@ -77,6 +80,40 @@ void TestTensorMultiply() {
   }
 }
 
+void TestTensorSubtract() {
+  {
+    Tensor<Int32> a({3});
+    Tensor<Int32> b({3});
+    a.Data() = {1, 2, 3};
+    b.Data() = {2, 4, 6};
+    auto c = Subtract(a, b);
+    AssertTrue(c.Data()[0] == -1, "Invalid subtract result");
+    AssertTrue(c.Data()[1] == -2, "Invalid subtract result");
+    AssertTrue(c.Data()[2] == -3, "Invalid subtract result");
+  }
+}
+
+void TestTensorNegate() {
+  {
+    Tensor<Int32> a({3});
+    a.Data() = {1, 2, 3};
+    auto c = Negate(a);
+    AssertTrue(c.Data()[0] == -1, "Invalid negate result");
+    AssertTrue(c.Data()[1] == -2, "Invalid negate result");
+    AssertTrue(c.Data()[2] == -3, "Invalid negate result");
+  }
+}
+
+void TestTensorApply() {
+  {
+    Tensor<Int32> a({3});
+    a.Data() = {-1, -2, -3};
+    auto c = Apply(a, std::abs);
+    AssertTrue(c.Data()[0] == 1, "Invalid apply result");
+    AssertTrue(c.Data()[1] == 2, "Invalid apply result");
+    AssertTrue(c.Data()[2] == 3, "Invalid apply result");
+  }
+}
 
 
 int main() {
@@ -85,5 +122,8 @@ int main() {
   TestTensorSize();
   TestTensorAdd();
   TestTensorMultiply();
+  TestTensorSubtract();
+  TestTensorNegate();
+  TestTensorApply();
   return 0;
 }

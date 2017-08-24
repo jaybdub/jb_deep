@@ -51,6 +51,30 @@ Tensor<T> Multiply(const Tensor<T> & a, const Tensor<T> & b) {
   return c;
 }
 
+template<typename T>
+Tensor<T> Subtract(const Tensor<T> & a, const Tensor<T> & b) {
+  Tensor<T> c(a.shape);
+  for (int i = 0; i < c.Size(); i++)
+    c.data[i] = a.data[i] - b.data[i];
+  return c;
+}
+
+template<typename T>
+Tensor<T> Negate(const Tensor<T> & a) {
+  Tensor<T> c(a.shape);
+  for (int i = 0; i < c.Size(); i++)
+    c.data[i] = -a.data[i];
+  return c;
+}
+
+template<typename T>
+Tensor<T> Apply(const Tensor<T> & a, T (*f)(T)) {
+  Tensor<T> c(a.shape);
+  for (int i = 0; i < c.Size(); i++)
+    c.data[i] = f(a.data[i]);
+  return c;
+}
+
 // TENSOR CLASS
 template<typename T>
 class Tensor {
@@ -69,6 +93,9 @@ public:
 
   friend Tensor Multiply<T>(const Tensor & a, const Tensor & b);
   friend Tensor Add<T>(const Tensor & a, const Tensor & b);
+  friend Tensor Subtract<T>(const Tensor & a, const Tensor & b);
+  friend Tensor Negate<T>(const Tensor & a);
+  friend Tensor Apply<T>(const Tensor & a, T (*f)(T));
 
 private:
   vector<T> data;
