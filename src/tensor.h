@@ -9,14 +9,15 @@ namespace jb {
 
 namespace tensor {
 
+// UTILITY FUNCTIONS
+
 vector<int> ShapeToStrides(const vector<int> & shape);
 
+// TENSOR CLASS
 template<typename T>
 struct Tensor {
 
-  Tensor(vector<int> shape) : shape(shape) {
-    strides = ShapeToStrides(shape);
-  }
+  Tensor(vector<int> shape) : shape(shape), strides(ShapeToStrides(shape)) {};
 
   vector<T> data;
   vector<int> shape;
