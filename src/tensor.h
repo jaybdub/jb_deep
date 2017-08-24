@@ -7,6 +7,10 @@ using namespace std;
 
 namespace jb {
 
+namespace tensor {
+
+vector<int> ShapeToStrides(const vector<int> & shape);
+
 template<typename T>
 struct Tensor {
 
@@ -18,9 +22,9 @@ struct Tensor {
   vector<int> shape;
   vector<int> strides;
 
-  static vector<int> ShapeToStrides(const vector<int> & shape);
-
 };
+
+}  // namespace tensor
 
 }  // namespace jb
 
