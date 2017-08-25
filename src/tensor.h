@@ -15,6 +15,8 @@ namespace tensor {
 
 TENSOR_TYPE(float, Float32)
 TENSOR_TYPE(double, Float64)
+TENSOR_TYPE(int8_t, Int8)
+TENSOR_TYPE(int16_t, Int16)
 TENSOR_TYPE(int32_t, Int32)
 TENSOR_TYPE(int64_t, Int64)
 
