@@ -68,9 +68,31 @@ void TestAdd() {
   }
 }
 
+void TestMultiply() {
+  {
+    Session<Int32> s;
+    Variable<Int32> a, b;
+    op::Multiply<Int32> multiply({&a, &b});
+    Tensor<Int32> val({3, 2});
+    val.DataMutable() = {1, 2, 3, 4, 5, 6};
+    s.Assign(&a, val);
+    s.Assign(&b, val);
+    s.Run({&multiply});
+    auto values = s.Values();
+    AssertTrue(values[&multiply].DataMutable()[0] == 1, "Invalid multiply value");
+    AssertTrue(values[&multiply].DataMutable()[1] == 4, "Invalid multiply value");
+    AssertTrue(values[&multiply].DataMutable()[2] == 9, "Invalid multiply value");
+    AssertTrue(values[&multiply].DataMutable()[3] == 16, "Invalid multiply value");
+    AssertTrue(values[&multiply].DataMutable()[4] == 25, "Invalid multiply value");
+    AssertTrue(values[&multiply].DataMutable()[5] == 36, "Invalid multiply value");
+  }
+}
+
+
 int main() {
   TestVariable();
   TestSessionRun();
   TestAdd();
+  TestMultiply();
   return 0;
 }
