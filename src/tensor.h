@@ -94,6 +94,13 @@ public:
   vector<int> & Shape() { return shape; };
   vector<int> & Stride() { return stride; };
 
+  T Get(vector<int> index) {
+    int flat_index = 0;
+    for (int i = 0; i < index.size(); i++)
+      flat_index += stride[i] * index[i];
+    return data[flat_index];
+  }
+
   int Size() {
     return accumulate(shape.begin(), shape.end(), 1, multiplies<int>());
   };
@@ -103,7 +110,7 @@ public:
   friend Tensor Subtract<T>(const Tensor & a, const Tensor & b);
   friend Tensor Negate<T>(const Tensor & a);
   friend Tensor Apply<T>(const Tensor & a, T (*f)(T));
-  friend Tensor<T> MatrixMultiply(const Tensor<T> & a, const Tensor<T> & b);
+  friend Tensor MatrixMultiply<T>(const Tensor & a, const Tensor & b);
 
 private:
   vector<T> data;
