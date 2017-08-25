@@ -1,7 +1,7 @@
 #ifndef JB_OP_H
 #define JB_OP_H
 
-#include <list>
+#include <vector>
 #include <unordered_map>
 
 #include "src/tensor.h"
@@ -17,11 +17,8 @@ template<typename T>
 class Op {
 public:
   Op() {};
-  Op(list<Op<T> *> inputs) : inputs(inputs) {};
   virtual const Tensor<T> & Evaluate(unordered_map<Op<T> *, Tensor<T>> &) = 0;
-  const list<Op<T> *> & Inputs() { return inputs; };
-private:
-  list<Op<T> *> inputs;
+  virtual vector<Op<T> *> Inputs() = 0;
 };
 
 // OP SUBCLASSES
@@ -29,7 +26,7 @@ private:
 template<typename T>
 class Variable : public Op<T> {
 public:
-  const Tensor<T> & Evaluate(unordered_map<Op<T> *, Tensor<T>> & values) {
+  const Tensor<T> & Evaluate(unordered_map<Op<T> *, Tensor<T>> & values) override {
     // assumes values computed.
     return values[this];
   }
@@ -38,6 +35,22 @@ public:
     values[this] = value;
     return values[this];
   }
+  vector<Op<T> *> Inputs() { return {}; }
+};
+
+template<typename T>
+class Add : public Op<T> {
+public:
+  Add(vector<Op<T> *> inputs) : inputs(inputs) {};
+  const Tensor<T> & Evaluate(unordered_map<Op<T> *, Tensor<T>> & values) override {
+    values[this] = values[Inputs()[0]];
+    for (int i = 1; i < Inputs().size(); i++)
+      values[this] = tensor::Add(values[this], values[Inputs()[i]]);
+    return values[this];
+  }
+  vector<Op<T> *> Inputs() { return inputs; };
+private:
+  vector<Op<T> *> inputs;
 };
 
 }  // namespace op

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <list>
 #include "src/tensor.h"
 #include "src/op.h"
 #include "test/test.h"
@@ -47,8 +48,29 @@ void TestSessionRun() {
   }
 }
 
+void TestAdd() {
+  {
+    Session<Int32> s;
+    Variable<Int32> a, b;
+    op::Add<Int32> add({&a, &b});
+    Tensor<Int32> val({3, 2});
+    val.DataMutable() = {1, 2, 3, 4, 5, 6};
+    s.Assign(&a, val);
+    s.Assign(&b, val);
+    s.Run({&add});
+    auto values = s.Values();
+    AssertTrue(values[&add].DataMutable()[0] == 2, "Invalid add value");
+    AssertTrue(values[&add].DataMutable()[1] == 4, "Invalid add value");
+    AssertTrue(values[&add].DataMutable()[2] == 6, "Invalid add value");
+    AssertTrue(values[&add].DataMutable()[3] == 8, "Invalid add value");
+    AssertTrue(values[&add].DataMutable()[4] == 10, "Invalid add value");
+    AssertTrue(values[&add].DataMutable()[5] == 12, "Invalid add value");
+  }
+}
+
 int main() {
   TestVariable();
   TestSessionRun();
+  TestAdd();
   return 0;
 }
