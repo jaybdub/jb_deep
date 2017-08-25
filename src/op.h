@@ -41,6 +41,17 @@ public:
   }
 };
 
+template<typename T>
+class Add : public Op<T> {
+  const Tensor<T> & Evaluate(Session<T> & session) override {
+    // evaluate inputs
+    for (auto input : inputs) {
+      input->Evaluate(session);
+    }
+    return session.values[this];
+  }
+};
+
 }  // namespace op
 
 }  // namespace jb
