@@ -115,6 +115,22 @@ void TestTensorApply() {
   }
 }
 
+void TestTensorGet() {
+  {
+    Tensor<Int32> a({3, 3});
+    a.Data() = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    AssertTrue(a.Get({0, 0}) == 1, "Invalid get result");
+    AssertTrue(a.Get({0, 1}) == 2, "Invalid get result");
+    AssertTrue(a.Get({0, 2}) == 3, "Invalid get result");
+    AssertTrue(a.Get({1, 0}) == 4, "Invalid get result");
+    AssertTrue(a.Get({1, 1}) == 5, "Invalid get result");
+    AssertTrue(a.Get({1, 2}) == 6, "Invalid get result");
+    AssertTrue(a.Get({2, 0}) == 7, "Invalid get result");
+    AssertTrue(a.Get({2, 1}) == 8, "Invalid get result");
+    AssertTrue(a.Get({2, 2}) == 9, "Invalid get result");
+  }
+}
+
 
 int main() {
   TestTensorShapeToStride();
@@ -125,5 +141,6 @@ int main() {
   TestTensorSubtract();
   TestTensorNegate();
   TestTensorApply();
+  TestTensorGet();
   return 0;
 }
