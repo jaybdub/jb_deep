@@ -80,6 +80,26 @@ Tensor<T> Apply(const Tensor<T> & a, T (*f)(T)) {
 template<typename T>
 Tensor<T> MatrixMultiply(const Tensor<T> & a, const Tensor<T> & b) {
   // TODO: implement shape functions
+  if (a.NumDimension() != 2)
+    throw runtime_error("MatrixMultiply: a is not a matrix");
+  if (b.NumDimension() != 2)
+    throw runtime_error("MatrixMultiply: b is not a matrix");
+  if (a.Shape()[1] != b.Shape()[0])
+    throw runtime_error("MatrixMultiply: inner dimensions do not match");
+
+  Tensor<T> c({a.Shape()[0], b.Shape()[1]});
+  int inner_dim = a.Shape()[1];
+
+  for (int i = 0; i < c.Shape()[0]; i++) {
+    for (int j = 0; j < c.Shape()[1]; j++) {
+      int val = 0;
+      for (int k = 0; k < inner_dim; k++) {
+        val += a.Get({i, k}) * b.Get({k, j});
+      }
+      c.At({i, j}) = val;
+    }
+  }
+  return c;
 }
 
 // TENSOR CLASS
@@ -93,11 +113,12 @@ public:
 
   const vector<T> & Data() { return data; };
   vector<T> & DataMutable() { return data; };
-  const vector<int> & Shape() { return shape; };
-  const vector<int> & Stride() { return stride; };
-  T Get(vector<int> index);
+  const vector<int> & Shape() const { return shape; };
+  const vector<int> & Stride() const { return stride; };
+  T Get(vector<int> index) const;
   T & At(vector<int> index);
   int Size();
+  int NumDimension() const { return shape.size(); }
 
   friend Tensor Multiply<T>(const Tensor & a, const Tensor & b);
   friend Tensor Add<T>(const Tensor & a, const Tensor & b);
@@ -115,7 +136,7 @@ private:
 // TENSOR METHODS
 
 template<typename T>
-T Tensor<T>::Get(vector<int> index) {
+T Tensor<T>::Get(vector<int> index) const {
   int flat_index = 0;
   for (int i = 0; i < index.size(); i++)
     flat_index += stride[i] * index[i];

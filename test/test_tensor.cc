@@ -149,6 +149,26 @@ void TestTensorAt() {
   }
 }
 
+void TestTensorMatrixMultply() {
+  {
+    Tensor<Int32> a({3, 2}), b({2, 3});
+    a.DataMutable() = {1, 2, 1, 2, 1, 2};
+    b.DataMutable() = {1, 2, 3, 1, 2, 3};
+    auto c = MatrixMultiply(a, b);
+    AssertTrue(c.Shape()[0] == 3, "MatrixMultiply: Should have correct shape");
+    AssertTrue(c.Shape()[1] == 3, "MatrixMultiply: Should have correct shape");
+    AssertTrue(c.Get({0, 0}) == 3, "MatrixMultiply: Should compute correct value");
+    AssertTrue(c.Get({0, 1}) == 6, "MatrixMultiply: Should compute correct value");
+    AssertTrue(c.Get({0, 2}) == 9, "MatrixMultiply: Should compute correct value");
+    AssertTrue(c.Get({1, 0}) == 3, "MatrixMultiply: Should compute correct value");
+    AssertTrue(c.Get({1, 1}) == 6, "MatrixMultiply: Should compute correct value");
+    AssertTrue(c.Get({1, 2}) == 9, "MatrixMultiply: Should compute correct value");
+    AssertTrue(c.Get({2, 0}) == 3, "MatrixMultiply: Should compute correct value");
+    AssertTrue(c.Get({2, 1}) == 6, "MatrixMultiply: Should compute correct value");
+    AssertTrue(c.Get({2, 2}) == 9, "MatrixMultiply: Should compute correct value");
+  }
+}
+
 int main() {
   TestTensorShapeToStride();
   TestTensorConstructorShapeStride();
@@ -160,5 +180,6 @@ int main() {
   TestTensorApply();
   TestTensorGet();
   TestTensorAt();
+  TestTensorMatrixMultply();
   return 0;
 }
