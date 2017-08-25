@@ -1,6 +1,5 @@
 #include <iostream>
 #include <functional>
-#include <cstdlib>
 
 
 #include "src/tensor.h"
@@ -131,6 +130,24 @@ void TestTensorGet() {
   }
 }
 
+void TestTensorAt() {
+  {
+    Tensor<Int32> a({3, 3});
+    a.Data() = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    AssertTrue(a.At({0, 0}) == 1, "Invalid at result");
+    AssertTrue(a.At({0, 1}) == 2, "Invalid at result");
+    AssertTrue(a.At({0, 2}) == 3, "Invalid at result");
+    AssertTrue(a.At({1, 0}) == 4, "Invalid at result");
+    AssertTrue(a.At({1, 1}) == 5, "Invalid at result");
+    AssertTrue(a.At({1, 2}) == 6, "Invalid at result");
+    AssertTrue(a.At({2, 0}) == 7, "Invalid at result");
+    AssertTrue(a.At({2, 1}) == 8, "Invalid at result");
+    AssertTrue(a.At({2, 2}) == 9, "Invalid at result");
+    // modify element
+    a.At({2, 2}) = 15;
+    AssertTrue(a.At({2, 2}) == 15, "Should modify element returned by At()");
+  }
+}
 
 int main() {
   TestTensorShapeToStride();
@@ -142,5 +159,6 @@ int main() {
   TestTensorNegate();
   TestTensorApply();
   TestTensorGet();
+  TestTensorAt();
   return 0;
 }

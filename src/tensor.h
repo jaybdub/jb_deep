@@ -95,6 +95,7 @@ public:
   vector<int> & Shape() { return shape; };
   vector<int> & Stride() { return stride; };
   T Get(vector<int> index);
+  T & At(vector<int> index);
   int Size();
 
   friend Tensor Multiply<T>(const Tensor & a, const Tensor & b);
@@ -114,6 +115,14 @@ private:
 
 template<typename T>
 T Tensor<T>::Get(vector<int> index) {
+  int flat_index = 0;
+  for (int i = 0; i < index.size(); i++)
+    flat_index += stride[i] * index[i];
+  return data[flat_index];
+}
+
+template<typename T>
+T & Tensor<T>::At(vector<int> index) {
   int flat_index = 0;
   for (int i = 0; i < index.size(); i++)
     flat_index += stride[i] * index[i];
