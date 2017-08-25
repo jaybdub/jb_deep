@@ -106,6 +106,7 @@ Tensor<T> MatrixMultiply(const Tensor<T> & a, const Tensor<T> & b) {
 template<typename T>
 class Tensor {
 public:
+  Tensor() {};
   Tensor(vector<int> shape) : shape(shape), stride(ShapeToStrides(shape)) {
     data.resize(Size());
   };

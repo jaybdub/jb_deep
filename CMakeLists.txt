@@ -12,4 +12,5 @@ include_directories(${CMAKE_SOURCE_DIR})
 # TESTS
 
 add_executable(test_tensor test/test_tensor.cc)
-target_link_libraries(test_tensor)
+
+add_executable(test_op test/test_op.cc)
