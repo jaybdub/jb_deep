@@ -35,7 +35,7 @@ vector<int> ShapeToStrides(const vector<int> &shape) {
   return strides;
 }
 
-// FRIEND FUNCTIONS
+// TENSOR FRIENDS
 
 template<typename T>
 Tensor<T> Add(const Tensor<T> & a, const Tensor<T> & b) {
@@ -83,6 +83,7 @@ Tensor<T> MatrixMultiply(const Tensor<T> & a, const Tensor<T> & b) {
 }
 
 // TENSOR CLASS
+
 template<typename T>
 class Tensor {
 public:
@@ -93,17 +94,8 @@ public:
   vector<T> & Data() { return data; };
   vector<int> & Shape() { return shape; };
   vector<int> & Stride() { return stride; };
-
-  T Get(vector<int> index) {
-    int flat_index = 0;
-    for (int i = 0; i < index.size(); i++)
-      flat_index += stride[i] * index[i];
-    return data[flat_index];
-  }
-
-  int Size() {
-    return accumulate(shape.begin(), shape.end(), 1, multiplies<int>());
-  };
+  T Get(vector<int> index);
+  int Size();
 
   friend Tensor Multiply<T>(const Tensor & a, const Tensor & b);
   friend Tensor Add<T>(const Tensor & a, const Tensor & b);
@@ -116,6 +108,21 @@ private:
   vector<T> data;
   vector<int> shape;
   vector<int> stride;
+};
+
+// TENSOR METHODS
+
+template<typename T>
+T Tensor<T>::Get(vector<int> index) {
+  int flat_index = 0;
+  for (int i = 0; i < index.size(); i++)
+    flat_index += stride[i] * index[i];
+  return data[flat_index];
+}
+
+template<typename T>
+int Tensor<T>::Size() {
+  return accumulate(shape.begin(), shape.end(), 1, multiplies<int>());
 };
 
 }  // namespace tensor
