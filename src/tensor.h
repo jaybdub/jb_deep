@@ -91,9 +91,10 @@ public:
     data.resize(Size());
   };
 
-  vector<T> & Data() { return data; };
-  vector<int> & Shape() { return shape; };
-  vector<int> & Stride() { return stride; };
+  const vector<T> & Data() { return data; };
+  vector<T> & DataMutable() { return data; };
+  const vector<int> & Shape() { return shape; };
+  const vector<int> & Stride() { return stride; };
   T Get(vector<int> index);
   T & At(vector<int> index);
   int Size();

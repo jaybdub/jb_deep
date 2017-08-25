@@ -50,8 +50,8 @@ void TestTensorAdd() {
   {
     Tensor<Int32> t1({2, 3});
     Tensor<Int32> t2({2, 3});
-    t1.Data() = {1, 2, 3, 1, 2, 3};
-    t2.Data() = {2, 3, 4, 2, 3, 4};
+    t1.DataMutable() = {1, 2, 3, 1, 2, 3};
+    t2.DataMutable() = {2, 3, 4, 2, 3, 4};
     Tensor<Int32> out = Add<Int32>(t1, t2);
     AssertTrue(out.Data()[0] == 3, "Invalid add result");
     AssertTrue(out.Data()[1] == 5, "Invalid add result");
@@ -67,8 +67,8 @@ void TestTensorMultiply() {
   {
     Tensor<Int32> t1({2, 3});
     Tensor<Int32> t2({2, 3});
-    t1.Data() = {1, 2, 3, 1, 2, 3};
-    t2.Data() = {2, 3, 4, 2, 3, 4};
+    t1.DataMutable() = {1, 2, 3, 1, 2, 3};
+    t2.DataMutable() = {2, 3, 4, 2, 3, 4};
     Tensor<Int32> out = Multiply<Int32>(t1, t2);
     AssertTrue(out.Data()[0] == 2, "Invalid add result");
     AssertTrue(out.Data()[1] == 6, "Invalid add result");
@@ -83,8 +83,8 @@ void TestTensorSubtract() {
   {
     Tensor<Int32> a({3});
     Tensor<Int32> b({3});
-    a.Data() = {1, 2, 3};
-    b.Data() = {2, 4, 6};
+    a.DataMutable() = {1, 2, 3};
+    b.DataMutable() = {2, 4, 6};
     auto c = Subtract(a, b);
     AssertTrue(c.Data()[0] == -1, "Invalid subtract result");
     AssertTrue(c.Data()[1] == -2, "Invalid subtract result");
@@ -95,7 +95,7 @@ void TestTensorSubtract() {
 void TestTensorNegate() {
   {
     Tensor<Int32> a({3});
-    a.Data() = {1, 2, 3};
+    a.DataMutable() = {1, 2, 3};
     auto c = Negate(a);
     AssertTrue(c.Data()[0] == -1, "Invalid negate result");
     AssertTrue(c.Data()[1] == -2, "Invalid negate result");
@@ -106,7 +106,7 @@ void TestTensorNegate() {
 void TestTensorApply() {
   {
     Tensor<Int32> a({3});
-    a.Data() = {-1, -2, -3};
+    a.DataMutable() = {-1, -2, -3};
     auto c = Apply(a, std::abs);
     AssertTrue(c.Data()[0] == 1, "Invalid apply result");
     AssertTrue(c.Data()[1] == 2, "Invalid apply result");
@@ -117,7 +117,7 @@ void TestTensorApply() {
 void TestTensorGet() {
   {
     Tensor<Int32> a({3, 3});
-    a.Data() = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    a.DataMutable() = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     AssertTrue(a.Get({0, 0}) == 1, "Invalid get result");
     AssertTrue(a.Get({0, 1}) == 2, "Invalid get result");
     AssertTrue(a.Get({0, 2}) == 3, "Invalid get result");
@@ -133,7 +133,7 @@ void TestTensorGet() {
 void TestTensorAt() {
   {
     Tensor<Int32> a({3, 3});
-    a.Data() = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    a.DataMutable() = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     AssertTrue(a.At({0, 0}) == 1, "Invalid at result");
     AssertTrue(a.At({0, 1}) == 2, "Invalid at result");
     AssertTrue(a.At({0, 2}) == 3, "Invalid at result");
