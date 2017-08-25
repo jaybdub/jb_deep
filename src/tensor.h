@@ -75,6 +75,11 @@ Tensor<T> Apply(const Tensor<T> & a, T (*f)(T)) {
   return c;
 }
 
+template<typename T>
+Tensor<T> MatrixMultiply(const Tensor<T> & a, const Tensor<T> & b) {
+  // TODO: implement shape functions
+}
+
 // TENSOR CLASS
 template<typename T>
 class Tensor {
@@ -96,6 +101,7 @@ public:
   friend Tensor Subtract<T>(const Tensor & a, const Tensor & b);
   friend Tensor Negate<T>(const Tensor & a);
   friend Tensor Apply<T>(const Tensor & a, T (*f)(T));
+  friend Tensor<T> MatrixMultiply(const Tensor<T> & a, const Tensor<T> & b);
 
 private:
   vector<T> data;
