@@ -79,7 +79,6 @@ Tensor<T> Apply(const Tensor<T> & a, T (*f)(T)) {
 
 template<typename T>
 Tensor<T> MatrixMultiply(const Tensor<T> & a, const Tensor<T> & b) {
-  // TODO: implement shape functions
   if (a.NumDimension() != 2)
     throw runtime_error("MatrixMultiply: a is not a matrix");
   if (b.NumDimension() != 2)
