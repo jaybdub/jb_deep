@@ -47,6 +47,44 @@ Tensor<T> Zeros(vector<int> shape) {
   return t;
 }
 
+template<typename T>
+Tensor<T> Ones(vector<int> shape) {
+  Tensor<T> t;
+  t.shape = shape;
+  t.stride = ShapeToStrides(shape);
+  t.offset = 0;
+  t.data = make_shared<vector<T>>(t.Size());
+  for (auto &d : t.DataMutable())
+    d = 1;
+  return t;
+}
+
+template<typename T>
+Tensor<T> Identity(vector<int> shape) {
+
+}
+
+template<typename T>
+Tensor<T> RandomNormal(vector<int> shape, T mean, T stdev) {
+
+}
+
+template<typename T>
+Tensor<T> RandomUniform(vector<int> shape, T min, T max) {
+
+}
+
+template<typename T>
+Tensor<T> Slice(const Tensor<T> & other, vector<int> start, vector<int>
+    stop, vector<int> stride) {
+
+}
+
+template<typename T>
+Tensor<T> Copy(const Tensor<T> & other) {
+
+}
+
 // TENSOR FRIENDS
 
 template<typename T>
@@ -118,9 +156,20 @@ Tensor<T> MatrixMultiply(const Tensor<T> & a, const Tensor<T> & b) {
 template<typename T>
 class Tensor {
 public:
+  // Constructors
   Tensor() {};
-  friend Tensor Zeros<T>(vector<int> shape);
+  Tensor(const Tensor<T> & other);
 
+  friend Tensor Zeros<T>(vector<int> shape);
+  friend Tensor Ones<T>(vector<int> shape);
+  friend Tensor Identity<T>(vector<int> shape);
+  friend Tensor RandomNormal<T>(vector<int> shape, T mean, T stdev);
+  friend Tensor RandomUniform<T>(vector<int> shape, T min, T max);
+  friend Tensor Slice<T>(const Tensor<T> & other, vector<int> start, vector<int>
+    stop, vector<int> stride);
+  friend Tensor Copy<T>(const Tensor<T> & other);
+
+  // Getters
   const vector<T> & Data() { return (*data); };
   vector<T> & DataMutable() { return (*data); };
   const vector<int> & Shape() const { return shape; };

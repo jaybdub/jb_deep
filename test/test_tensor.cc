@@ -170,6 +170,41 @@ void TestTensorMatrixMultply() {
   }
 }
 
+void TestTensorZeros() {
+  auto t = Zeros<Int32>({3, 3});
+  AssertTrue(t.Shape()[0] == 3, "Zeros: Incorrect shape");
+  AssertTrue(t.Shape()[1] == 3, "Zeros: Incorrect shape");
+  AssertTrue(t.Stride()[0] == 3, "Zeros: Incorrect stride");
+  AssertTrue(t.Stride()[1] == 1, "Zeros: Incorrect stride");
+  AssertTrue(t.Data().size() == 9, "Zeros: Incorect data size");
+  for (auto d : t.Data())
+    AssertTrue(d == 0, "Zeros: Elements should all be zero");
+}
+
+void TestTensorOnes() {
+  auto t = Ones<Int32>({3, 3});
+  AssertTrue(t.Shape()[0] == 3, "Ones: Incorrect shape");
+  AssertTrue(t.Shape()[1] == 3, "Ones: Incorrect shape");
+  AssertTrue(t.Stride()[0] == 3, "Ones: Incorrect stride");
+  AssertTrue(t.Stride()[1] == 1, "Ones: Incorrect stride");
+  AssertTrue(t.Data().size() == 9, "Ones: Incorect data size");
+  for (auto d : t.Data())
+    AssertTrue(d == 1, "Ones: Elements should all be one");
+}
+
+void TestTensorReferenceConstructor() {
+
+}
+
+void TestTensorSlice() {
+
+}
+
+void TestTensorCopy() {
+
+}
+
+
 int main() {
   TestTensorShapeToStride();
   TestTensorConstructorShapeStride();
@@ -182,5 +217,10 @@ int main() {
   TestTensorGet();
   TestTensorAt();
   TestTensorMatrixMultply();
+  TestTensorZeros();
+  TestTensorOnes();
+  TestTensorSlice();
+  TestTensorCopy();
+  TestTensorReferenceConstructor();
   return 0;
 }
