@@ -93,8 +93,24 @@ Tensor<T> Slice(const Tensor<T> & other, vector<int> start, vector<int>
 }
 
 template<typename T>
-Tensor<T> Copy(const Tensor<T> & other) {
+Tensor<T> Copy(const Tensor<T> & src) {
+  Tensor<T> dst = Zeros<T>(src.shape);
+  MoveHelper(src, dst, src.offset, dst.offset, 0);
+  return dst;
+}
 
+template<typename T>
+void MoveHelper(const Tensor<T> & a, Tensor<T> & b, int da, int db, int dim) {
+  if (dim < a.NumDimension()) {
+    int stride_a = a.stride[dim];
+    int stride_b = b.stride[dim];
+    int shape = a.shape[dim];
+    for (int i = 0; i < shape; i++) {
+      MoveHelper<T>(a, b, da + i * stride_a, db + i * stride_b, dim + 1);
+    }
+  } else {
+    b.data->at(db) = a.data->at(da);
+  }
 }
 
 // TENSOR FRIENDS
@@ -170,7 +186,12 @@ class Tensor {
 public:
   // Constructors
   Tensor() {};
-  Tensor(const Tensor<T> & other);
+  Tensor(const Tensor<T> & other) {
+    data = other.data;
+    stride = other.stride;
+    shape = other.shape;
+    offset = other.offset;
+  };
 
   friend Tensor Zeros<T>(vector<int> shape);
   friend Tensor Ones<T>(vector<int> shape);
@@ -180,6 +201,9 @@ public:
   friend Tensor Slice<T>(const Tensor<T> & other, vector<int> start, vector<int>
     stop, vector<int> stride);
   friend Tensor Copy<T>(const Tensor<T> & other);
+//  friend Tensor Move<T>(const Tensor<T> & src, Tensor<T> & dst);
+  friend void MoveHelper<T>(const Tensor<T> & a, Tensor<T> & b, int da, int db,
+                            int dim);
 
   // Getters
   const vector<T> & Data() { return (*data); };
@@ -197,6 +221,7 @@ public:
   friend Tensor Negate<T>(const Tensor & a);
   friend Tensor Apply<T>(const Tensor & a, T (*f)(T));
   friend Tensor MatrixMultiply<T>(const Tensor & a, const Tensor & b);
+
 
 private:
   shared_ptr<vector<T>> data;

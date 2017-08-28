@@ -202,20 +202,43 @@ void TestIdentity() {
     AssertTrue(t.At({1, 0}) == 0, "Identity: Off diagonal should be 0");
     AssertTrue(t.At({1, 2}) == 0, "Identity: Off diagonal should be 0");
   }
+  {
+    auto t = Identity<Int32>({3, 2});
+    AssertTrue(t.At({0, 0}) == 1, "Identity: Incorrect value");
+    AssertTrue(t.At({0, 1}) == 0, "Identity: Incorrect value");
+    AssertTrue(t.At({0, 2}) == 0, "Identity: Incorrect value");
+    AssertTrue(t.At({1, 0}) == 0, "Identity: Incorrect value");
+    AssertTrue(t.At({1, 1}) == 1, "Identity: Incorrect value");
+    AssertTrue(t.At({1, 2}) == 0, "Identity: Incorrect value");
+  }
 }
 
 void TestTensorReferenceConstructor() {
+  {
+    auto t1 = Ones<Int32>({3, 3});
+    Tensor<Int32> t2(t1);
+    AssertTrue(t2.At({0, 0}) == 1, "Should take value of other");
+    t2.At({0, 0}) = 2;
+    AssertTrue(t1.At({0, 0}) == 2, "Should share data (mutating changes other)");
+  }
+}
 
+void TestTensorCopy() {
+  {
+    auto t1 = Ones<Int32>({3, 3});
+    Tensor<Int32> t2 = Copy(t1);
+    AssertTrue(t2.At({0, 0}) == 1, "Should take value of other");
+    AssertTrue(t2.At({1, 2}) == 1, "Should take value of other");
+    AssertTrue(t2.At({2, 2}) == 1, "Should take value of other");
+    t2.At({0, 0}) = 2;
+    AssertTrue(t1.At({0, 0}) == 1,
+               "Should not share data (mutating does not change other)");
+  }
 }
 
 void TestTensorSlice() {
 
 }
-
-void TestTensorCopy() {
-
-}
-
 
 int main() {
   TestTensorShapeToStride();
