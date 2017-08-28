@@ -28,7 +28,7 @@ void TestTensorShapeToStride() {
 
 void TestTensorConstructorShapeStride() {
   {
-    Tensor<Float32> tensor({2, 3, 9});
+    Tensor<Int32> tensor = Zeros<Int32>({2, 3, 9});
     AssertTrue(tensor.Shape()[0] == 2, "Incorrect tensor shape");
     AssertTrue(tensor.Shape()[1] == 3, "Incorrect tensor shape");
     AssertTrue(tensor.Shape()[2] == 9, "Incorrect tensor shape");
@@ -40,7 +40,7 @@ void TestTensorConstructorShapeStride() {
 
 void TestTensorSize() {
   {
-    Tensor<Float32> tensor({2, 3, 9});
+    Tensor<Int32> tensor = Zeros<Int32>({2, 3, 9});
     AssertTrue(tensor.Size() == 2 * 3 * 9, "Incorrect tensor size");
   }
 }
@@ -48,8 +48,8 @@ void TestTensorSize() {
 void TestTensorAdd() {
   // correct output
   {
-    Tensor<Int32> t1({2, 3});
-    Tensor<Int32> t2({2, 3});
+    Tensor<Int32> t1 = Zeros<Int32>({2, 3});
+    Tensor<Int32> t2 = Zeros<Int32>({2, 3});
     t1.DataMutable() = {1, 2, 3, 1, 2, 3};
     t2.DataMutable() = {2, 3, 4, 2, 3, 4};
     Tensor<Int32> out = Add<Int32>(t1, t2);
@@ -65,8 +65,8 @@ void TestTensorAdd() {
 void TestTensorMultiply() {
   // correct output
   {
-    Tensor<Int32> t1({2, 3});
-    Tensor<Int32> t2({2, 3});
+    Tensor<Int32> t1 = Zeros<Int32>({2, 3});
+    Tensor<Int32> t2 = Zeros<Int32>({2, 3});
     t1.DataMutable() = {1, 2, 3, 1, 2, 3};
     t2.DataMutable() = {2, 3, 4, 2, 3, 4};
     Tensor<Int32> out = Multiply<Int32>(t1, t2);
@@ -81,8 +81,8 @@ void TestTensorMultiply() {
 
 void TestTensorSubtract() {
   {
-    Tensor<Int32> a({3});
-    Tensor<Int32> b({3});
+    Tensor<Int32> a = Zeros<Int32>({3});
+    Tensor<Int32> b = Zeros<Int32>({3});
     a.DataMutable() = {1, 2, 3};
     b.DataMutable() = {2, 4, 6};
     auto c = Subtract(a, b);
@@ -94,7 +94,7 @@ void TestTensorSubtract() {
 
 void TestTensorNegate() {
   {
-    Tensor<Int32> a({3});
+    Tensor<Int32> a = Zeros<Int32>({3});
     a.DataMutable() = {1, 2, 3};
     auto c = Negate(a);
     AssertTrue(c.Data()[0] == -1, "Invalid negate result");
@@ -105,7 +105,7 @@ void TestTensorNegate() {
 
 void TestTensorApply() {
   {
-    Tensor<Int32> a({3});
+    Tensor<Int32> a = Zeros<Int32>({3});
     a.DataMutable() = {-1, -2, -3};
     auto c = Apply(a, std::abs);
     AssertTrue(c.Data()[0] == 1, "Invalid apply result");
@@ -116,7 +116,7 @@ void TestTensorApply() {
 
 void TestTensorGet() {
   {
-    Tensor<Int32> a({3, 3});
+    Tensor<Int32> a = Zeros<Int32>({3, 3});
     a.DataMutable() = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     AssertTrue(a.Get({0, 0}) == 1, "Invalid get result");
     AssertTrue(a.Get({0, 1}) == 2, "Invalid get result");
@@ -132,7 +132,7 @@ void TestTensorGet() {
 
 void TestTensorAt() {
   {
-    Tensor<Int32> a({3, 3});
+    Tensor<Int32> a = Zeros<Int32>({3, 3});
     a.DataMutable() = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     AssertTrue(a.At({0, 0}) == 1, "Invalid at result");
     AssertTrue(a.At({0, 1}) == 2, "Invalid at result");
@@ -151,7 +151,8 @@ void TestTensorAt() {
 
 void TestTensorMatrixMultply() {
   {
-    Tensor<Int32> a({3, 2}), b({2, 3});
+    Tensor<Int32> a = Zeros<Int32>({3, 2});
+    Tensor<Int32> b = Zeros<Int32>({2, 3});
     a.DataMutable() = {1, 2, 1, 2, 1, 2};
     b.DataMutable() = {1, 2, 3, 1, 2, 3};
     auto c = MatrixMultiply(a, b);

@@ -4,6 +4,7 @@
 #include <vector>
 #include <functional>
 #include <numeric>
+#include <memory>
 
 #define TENSOR_TYPE(type, name) typedef type name;
 
@@ -35,11 +36,22 @@ vector<int> ShapeToStrides(const vector<int> &shape) {
   return strides;
 }
 
+// CONSTRUCTORS
+template<typename T>
+Tensor<T> Zeros(vector<int> shape) {
+  Tensor<T> t;
+  t.shape = shape;
+  t.stride = ShapeToStrides(shape);
+  t.offset = 0;
+  t.data.resize(t.Size());
+  return t;
+}
+
 // TENSOR FRIENDS
 
 template<typename T>
 Tensor<T> Add(const Tensor<T> & a, const Tensor<T> & b) {
-  Tensor<T> c(a.shape);
+  Tensor<T> c = Zeros<T>(a.shape);
   for (int i = 0; i < c.Size(); i++)
     c.data[i] = a.data[i] + b.data[i];
   return c;
@@ -47,7 +59,7 @@ Tensor<T> Add(const Tensor<T> & a, const Tensor<T> & b) {
 
 template<typename T>
 Tensor<T> Multiply(const Tensor<T> & a, const Tensor<T> & b) {
-  Tensor<T> c(a.shape);
+  Tensor<T> c = Zeros<T>(a.shape);
   for (int i = 0; i < c.Size(); i++)
     c.data[i] = a.data[i] * b.data[i];
   return c;
@@ -55,7 +67,7 @@ Tensor<T> Multiply(const Tensor<T> & a, const Tensor<T> & b) {
 
 template<typename T>
 Tensor<T> Subtract(const Tensor<T> & a, const Tensor<T> & b) {
-  Tensor<T> c(a.shape);
+  Tensor<T> c = Zeros<T>(a.shape);
   for (int i = 0; i < c.Size(); i++)
     c.data[i] = a.data[i] - b.data[i];
   return c;
@@ -63,7 +75,7 @@ Tensor<T> Subtract(const Tensor<T> & a, const Tensor<T> & b) {
 
 template<typename T>
 Tensor<T> Negate(const Tensor<T> & a) {
-  Tensor<T> c(a.shape);
+  Tensor<T> c = Zeros<T>(a.shape);
   for (int i = 0; i < c.Size(); i++)
     c.data[i] = -a.data[i];
   return c;
@@ -71,7 +83,7 @@ Tensor<T> Negate(const Tensor<T> & a) {
 
 template<typename T>
 Tensor<T> Apply(const Tensor<T> & a, T (*f)(T)) {
-  Tensor<T> c(a.shape);
+  Tensor<T> c = Zeros<T>(a.shape);
   for (int i = 0; i < c.Size(); i++)
     c.data[i] = f(a.data[i]);
   return c;
@@ -86,7 +98,7 @@ Tensor<T> MatrixMultiply(const Tensor<T> & a, const Tensor<T> & b) {
   if (a.Shape()[1] != b.Shape()[0])
     throw runtime_error("MatrixMultiply: inner dimensions do not match");
 
-  Tensor<T> c({a.Shape()[0], b.Shape()[1]});
+  Tensor<T> c = Zeros<T>({a.Shape()[0], b.Shape()[1]});
   int inner_dim = a.Shape()[1];
 
   for (int i = 0; i < c.Shape()[0]; i++) {
@@ -107,9 +119,7 @@ template<typename T>
 class Tensor {
 public:
   Tensor() {};
-  Tensor(vector<int> shape) : shape(shape), stride(ShapeToStrides(shape)) {
-    data.resize(Size());
-  };
+  friend Tensor Zeros<T>(vector<int> shape);
 
   const vector<T> & Data() { return data; };
   vector<T> & DataMutable() { return data; };
@@ -131,7 +141,10 @@ private:
   vector<T> data;
   vector<int> shape;
   vector<int> stride;
+  int offset;
 };
+
+// CONSTRUCTORS
 
 // TENSOR METHODS
 
