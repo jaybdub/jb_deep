@@ -100,6 +100,11 @@ Tensor<T> Copy(const Tensor<T> & src) {
 }
 
 template<typename T>
+void Move(const Tensor<T> & src, Tensor<T> & dst) {
+  MoveHelper(src, dst, src.offset, dst.offset, 0);
+}
+
+template<typename T>
 void MoveHelper(const Tensor<T> & a, Tensor<T> & b, int da, int db, int dim) {
   if (dim < a.NumDimension()) {
     int stride_a = a.stride[dim];
@@ -201,7 +206,7 @@ public:
   friend Tensor Slice<T>(const Tensor<T> & other, vector<int> start, vector<int>
     stop, vector<int> stride);
   friend Tensor Copy<T>(const Tensor<T> & other);
-//  friend Tensor Move<T>(const Tensor<T> & src, Tensor<T> & dst);
+  friend void Move<T>(const Tensor<T> & src, Tensor<T> & dst);
   friend void MoveHelper<T>(const Tensor<T> & a, Tensor<T> & b, int da, int db,
                             int dim);
 

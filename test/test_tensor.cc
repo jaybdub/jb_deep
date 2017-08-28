@@ -236,6 +236,17 @@ void TestTensorCopy() {
   }
 }
 
+void TestTensorMove() {
+  {
+    auto t1 = Ones<Int32>({3, 3});
+    auto t2 = Zeros<Int32>({3, 3});
+    Move(t1, t2);
+    AssertTrue(t2.At({0, 0}) == 1, "Move should transfer value");
+    t2.At({0, 0}) = 2;
+    AssertTrue(t1.At({0, 0}) == 1, "Move should not share data");
+  }
+}
+
 void TestTensorSlice() {
 
 }
@@ -258,5 +269,6 @@ int main() {
   TestTensorSlice();
   TestTensorCopy();
   TestTensorReferenceConstructor();
+  TestTensorMove();
   return 0;
 }
