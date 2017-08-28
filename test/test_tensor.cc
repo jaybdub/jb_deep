@@ -192,6 +192,18 @@ void TestTensorOnes() {
     AssertTrue(d == 1, "Ones: Elements should all be one");
 }
 
+void TestIdentity() {
+  {
+    auto t = Identity<Int32>({3, 3});
+    AssertTrue(t.At({0, 0}) == 1, "Identity: Diagonal should be 1");
+    AssertTrue(t.At({1, 1}) == 1, "Identity: Diagonal should be 1");
+    AssertTrue(t.At({2, 2}) == 1, "Identity: Diagonal should be 1");
+    AssertTrue(t.At({0, 1}) == 0, "Identity: Off diagonal should be 0");
+    AssertTrue(t.At({1, 0}) == 0, "Identity: Off diagonal should be 0");
+    AssertTrue(t.At({1, 2}) == 0, "Identity: Off diagonal should be 0");
+  }
+}
+
 void TestTensorReferenceConstructor() {
 
 }
@@ -219,6 +231,7 @@ int main() {
   TestTensorMatrixMultply();
   TestTensorZeros();
   TestTensorOnes();
+  TestIdentity();
   TestTensorSlice();
   TestTensorCopy();
   TestTensorReferenceConstructor();

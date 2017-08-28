@@ -61,7 +61,19 @@ Tensor<T> Ones(vector<int> shape) {
 
 template<typename T>
 Tensor<T> Identity(vector<int> shape) {
-
+  Tensor<T> t = Zeros<T>(shape);
+  int min_dim = shape[0];
+  for (int i = 1; i < shape.size(); i++) {
+    if (shape[i] < min_dim)
+      min_dim = shape[i];
+  }
+  for (int i = 0; i < min_dim; i++) {
+    vector<int> index(shape.size());
+    for (auto &it : index)
+      it = i;
+    t.At(index) = 1;
+  }
+  return t;
 }
 
 template<typename T>
