@@ -150,7 +150,7 @@ private:
 
 template<typename T>
 T Tensor<T>::Get(vector<int> index) const {
-  int flat_index = 0;
+  int flat_index = offset;
   for (int i = 0; i < index.size(); i++)
     flat_index += stride[i] * index[i];
   return (*data)[flat_index];
@@ -158,7 +158,7 @@ T Tensor<T>::Get(vector<int> index) const {
 
 template<typename T>
 T & Tensor<T>::At(vector<int> index) {
-  int flat_index = 0;
+  int flat_index = offset;
   for (int i = 0; i < index.size(); i++)
     flat_index += stride[i] * index[i];
   return (*data)[flat_index];
