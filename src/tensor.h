@@ -43,7 +43,7 @@ Tensor<T> Zeros(vector<int> shape) {
   t.shape = shape;
   t.stride = ShapeToStrides(shape);
   t.offset = 0;
-  t.data.resize(t.Size());
+  t.data = make_shared<vector<T>>(t.Size());
   return t;
 }
 
@@ -53,7 +53,7 @@ template<typename T>
 Tensor<T> Add(const Tensor<T> & a, const Tensor<T> & b) {
   Tensor<T> c = Zeros<T>(a.shape);
   for (int i = 0; i < c.Size(); i++)
-    c.data[i] = a.data[i] + b.data[i];
+    c.data->at(i) = a.data->at(i) + b.data->at(i);
   return c;
 }
 
@@ -61,7 +61,7 @@ template<typename T>
 Tensor<T> Multiply(const Tensor<T> & a, const Tensor<T> & b) {
   Tensor<T> c = Zeros<T>(a.shape);
   for (int i = 0; i < c.Size(); i++)
-    c.data[i] = a.data[i] * b.data[i];
+    c.data->at(i) = a.data->at(i) * b.data->at(i);
   return c;
 }
 
@@ -69,7 +69,7 @@ template<typename T>
 Tensor<T> Subtract(const Tensor<T> & a, const Tensor<T> & b) {
   Tensor<T> c = Zeros<T>(a.shape);
   for (int i = 0; i < c.Size(); i++)
-    c.data[i] = a.data[i] - b.data[i];
+    c.data->at(i) = a.data->at(i) - b.data->at(i);
   return c;
 }
 
@@ -77,7 +77,7 @@ template<typename T>
 Tensor<T> Negate(const Tensor<T> & a) {
   Tensor<T> c = Zeros<T>(a.shape);
   for (int i = 0; i < c.Size(); i++)
-    c.data[i] = -a.data[i];
+    c.data->at(i) = -a.data->at(i);
   return c;
 }
 
@@ -85,7 +85,7 @@ template<typename T>
 Tensor<T> Apply(const Tensor<T> & a, T (*f)(T)) {
   Tensor<T> c = Zeros<T>(a.shape);
   for (int i = 0; i < c.Size(); i++)
-    c.data[i] = f(a.data[i]);
+    c.data->at(i) = f(a.data->at(i));
   return c;
 }
 
@@ -121,8 +121,8 @@ public:
   Tensor() {};
   friend Tensor Zeros<T>(vector<int> shape);
 
-  const vector<T> & Data() { return data; };
-  vector<T> & DataMutable() { return data; };
+  const vector<T> & Data() { return (*data); };
+  vector<T> & DataMutable() { return (*data); };
   const vector<int> & Shape() const { return shape; };
   const vector<int> & Stride() const { return stride; };
   T Get(vector<int> index) const;
@@ -138,7 +138,7 @@ public:
   friend Tensor MatrixMultiply<T>(const Tensor & a, const Tensor & b);
 
 private:
-  vector<T> data;
+  shared_ptr<vector<T>> data;
   vector<int> shape;
   vector<int> stride;
   int offset;
@@ -153,7 +153,7 @@ T Tensor<T>::Get(vector<int> index) const {
   int flat_index = 0;
   for (int i = 0; i < index.size(); i++)
     flat_index += stride[i] * index[i];
-  return data[flat_index];
+  return (*data)[flat_index];
 }
 
 template<typename T>
@@ -161,7 +161,7 @@ T & Tensor<T>::At(vector<int> index) {
   int flat_index = 0;
   for (int i = 0; i < index.size(); i++)
     flat_index += stride[i] * index[i];
-  return data[flat_index];
+  return (*data)[flat_index];
 }
 
 template<typename T>
