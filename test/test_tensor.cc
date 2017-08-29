@@ -258,7 +258,40 @@ void TestTensorMove() {
 }
 
 void TestTensorSlice() {
-
+  {
+    auto t1 = Identity<Int32>({3, 3});
+    auto t2 = Slice<Int32>(t1, {0, 0}, {3, 3}, {1, 1});
+    AssertTrue(t2.At({0, 0}) == 1, "Slice invalid value");
+    AssertTrue(t2.At({0, 1}) == 0, "Slice invalid value");
+    AssertTrue(t2.At({1, 1}) == 1, "Slice invalid value");
+  }
+  {
+    auto t1 = Identity<Int32>({3, 3});
+    auto t2 = Slice<Int32>(t1, {0, 0}, {3, 1}, {1, 1});
+    AssertTrue(t2.At({0, 0}) == 1, "Slice invalid value");
+    AssertTrue(t2.At({1, 0}) == 0, "Slice invalid value");
+    AssertTrue(t2.At({2, 0}) == 0, "Slice invalid value");
+    AssertTrue(t2.Shape()[0] == 3, "Slince invalid shape");
+    AssertTrue(t2.Shape()[1] == 1, "Slince invalid shape");
+  }
+  {
+    auto t1 = Identity<Int32>({3, 3});
+    auto t2 = Slice<Int32>(t1, {0, 0}, {3, 1}, {2, 2});
+    AssertTrue(t2.Shape()[0] == 2, "Invalid slice shape");
+    AssertTrue(t2.Shape()[1] == 1, "Invalid slice shape");
+  }
+  {
+    auto t1 = Identity<Int32>({4, 3});
+    auto t2 = Slice<Int32>(t1, {0, 0}, {4, 1}, {2, 2});
+    AssertTrue(t2.Shape()[0] == 2, "Invalid slice shape");
+    AssertTrue(t2.Shape()[1] == 1, "Invalid slice shape");
+  }
+  {
+    auto t1 = Identity<Int32>({4, 3});
+    auto t2 = Slice<Int32>(t1, {0, 0}, {4, 1}, {3, 2});
+    AssertTrue(t2.Shape()[0] == 2, "Invalid slice shape");
+    AssertTrue(t2.Shape()[1] == 1, "Invalid slice shape");
+  }
 }
 
 int main() {

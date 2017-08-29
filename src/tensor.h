@@ -5,6 +5,7 @@
 #include <functional>
 #include <numeric>
 #include <memory>
+#include <algorithm>
 
 #define TENSOR_TYPE(type, name) typedef type name;
 
@@ -90,8 +91,16 @@ template<typename T>
 Tensor<T> Slice(const Tensor<T> & other, vector<int> start, vector<int>
     stop, vector<int> stride) {
   // offset = other offset + start
-  // stride = other stride * stride
-  // shape = ?
+  Tensor<T> t;
+  t.data = other.data;
+  t.offset = other.DataIndex(start);
+  t.shape.resize(other.NumDimension());
+  t.stride.resize(other.NumDimension());
+  for (int i = 0; i < other.NumDimension(); i++) {
+    t.stride[i] = other.stride[i] * stride[i];
+    t.shape[i] = 1 + (stop[i] - start[i] - 1) / stride[i];
+  }
+  return t;
 }
 
 template<typename T>
