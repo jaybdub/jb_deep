@@ -15,7 +15,7 @@ using namespace jb::session;
 void TestVariable() {
   {
     Variable<Int32> a;
-    Tensor<Int32> a_val({3});
+    Tensor<Int32> a_val = Zeros<Int32>({3});
     a_val.DataMutable() = {1, 2, 3};
     unordered_map<Op<Int32> *, Tensor<Int32>> values;
     a.Assign(values, a_val);
@@ -33,7 +33,7 @@ void TestSessionRun() {
 
     // create variable and assign value in session
     Variable<Int32> a;
-    Tensor<Int32> a_val({3});
+    Tensor<Int32> a_val = Zeros<Int32>({3});
     a_val.DataMutable() = {1, 2, 3};
     s.Assign(&a, a_val);
 
@@ -53,7 +53,7 @@ void TestAdd() {
     Session<Int32> s;
     Variable<Int32> a, b;
     op::Add<Int32> add({&a, &b});
-    Tensor<Int32> val({3, 2});
+    Tensor<Int32> val = Zeros<Int32>({3, 2});
     val.DataMutable() = {1, 2, 3, 4, 5, 6};
     s.Assign(&a, val);
     s.Assign(&b, val);
@@ -73,7 +73,7 @@ void TestMultiply() {
     Session<Int32> s;
     Variable<Int32> a, b;
     op::Multiply<Int32> multiply({&a, &b});
-    Tensor<Int32> val({3, 2});
+    Tensor<Int32> val = Zeros<Int32>({3, 2});
     val.DataMutable() = {1, 2, 3, 4, 5, 6};
     s.Assign(&a, val);
     s.Assign(&b, val);
