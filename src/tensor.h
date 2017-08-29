@@ -89,7 +89,9 @@ Tensor<T> RandomUniform(vector<int> shape, T min, T max) {
 template<typename T>
 Tensor<T> Slice(const Tensor<T> & other, vector<int> start, vector<int>
     stop, vector<int> stride) {
-
+  // offset = other offset + start
+  // stride = other stride * stride
+  // shape = ?
 }
 
 template<typename T>
@@ -219,6 +221,7 @@ public:
   T & At(vector<int> index);
   int Size();
   int NumDimension() const { return shape.size(); }
+  int DataIndex(vector<int> index) const;
 
   friend Tensor Multiply<T>(const Tensor & a, const Tensor & b);
   friend Tensor Add<T>(const Tensor & a, const Tensor & b);
@@ -240,19 +243,21 @@ private:
 // TENSOR METHODS
 
 template<typename T>
-T Tensor<T>::Get(vector<int> index) const {
+int Tensor<T>::DataIndex(vector<int> index) const {
   int flat_index = offset;
   for (int i = 0; i < index.size(); i++)
     flat_index += stride[i] * index[i];
-  return (*data)[flat_index];
+  return flat_index;
+}
+
+template<typename T>
+T Tensor<T>::Get(vector<int> index) const {
+  return (*data)[DataIndex(index)];
 }
 
 template<typename T>
 T & Tensor<T>::At(vector<int> index) {
-  int flat_index = offset;
-  for (int i = 0; i < index.size(); i++)
-    flat_index += stride[i] * index[i];
-  return (*data)[flat_index];
+  return (*data)[DataIndex(index)];
 }
 
 template<typename T>

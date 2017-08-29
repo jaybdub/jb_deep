@@ -114,6 +114,16 @@ void TestTensorApply() {
   }
 }
 
+void TestTensorDataIndex() {
+  {
+    auto t = Zeros<Int32>({3, 3});
+    AssertTrue(t.DataIndex({0, 0}) == 0, "Data index incorrect");
+    AssertTrue(t.DataIndex({0, 2}) == 2, "Data index incorrect");
+    AssertTrue(t.DataIndex({1, 2}) == 5, "Data index incorrect");
+    AssertTrue(t.DataIndex({2, 2}) == 8, "Data index incorrect");
+  }
+}
+
 void TestTensorGet() {
   {
     Tensor<Int32> a = Zeros<Int32>({3, 3});
@@ -260,6 +270,7 @@ int main() {
   TestTensorSubtract();
   TestTensorNegate();
   TestTensorApply();
+  TestTensorDataIndex();
   TestTensorGet();
   TestTensorAt();
   TestTensorMatrixMultply();
